@@ -1,213 +1,209 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Robot Seas Trader | Calculadora de Trades</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robot Seas Trader</title>
 
-  <meta name="description" content="Robot Seas Trader é a calculadora oficial de trades do Robot Seas. Veja valores de frutas, permanentes e gamepasses e descubra se o trade é win, lose ou justo.">
-  <meta name="keywords" content="Robot Seas Trader, Robot Seas, trade Robot Seas, calculadora Robot Seas, Roblox Robot Seas">
-  <meta name="author" content="Robot Seas Trader">
+<style>
+body{margin:0;font-family:Arial;background:#0b0f1a;color:#e5e7eb}
+.container{max-width:950px;margin:auto;padding:20px}
+h1{text-align:center;color:#38bdf8}
+.card{background:#111827;border-radius:14px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,0,0,.4)}
+h2{color:#facc15}
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0b0f1a;
-      color: #e5e7eb;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #38bdf8;
-    }
-    .card {
-      background: #111827;
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.45);
-    }
-    h2 { color: #facc15; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td {
-      padding: 10px;
-      text-align: center;
-      border-bottom: 1px solid #1f2933;
-    }
-    th { color: #38bdf8; }
-    select, input {
-      background: #020617;
-      color: #e5e7eb;
-      border: 1px solid #1f2937;
-      border-radius: 10px;
-      padding: 10px;
-      width: 100%;
-      font-size: 16px;
-      margin-bottom: 10px;
-      appearance: auto;
-      -webkit-appearance: auto;
-      pointer-events: auto;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg,#38bdf8,#0ea5e9);
-      color: #020617;
-      font-size: 17px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .result { margin-top: 12px; text-align: center; font-size: 18px; font-weight: bold; }
-    .ok { color: #22c55e; }
-    .under { color: #ef4444; }
-    .fair { color: #facc15; }
-    .priceTab p { margin:6px 0; padding:6px; border-bottom:1px solid #1f2937; }
-  </style>
+select,input,button{
+width:100%;padding:10px;border-radius:10px;
+border:1px solid #1f2937;background:#020617;
+color:#e5e7eb;font-size:16px;margin-bottom:8px
+}
+button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
+
+.slot{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+
+.result{text-align:center;font-size:20px;font-weight:bold;margin-top:10px}
+.ok{color:#22c55e}
+.under{color:#ef4444}
+.fair{color:#facc15}
+
+/* Barra de trade */
+.tradebar{
+width:100%;height:18px;border-radius:10px;
+background:#020617;overflow:hidden;margin:12px 0
+}
+.tradebar-inner{
+height:100%;width:50%;
+background:#facc15;
+transition:all .6s ease;
+}
+
+/* Animações */
+.animate-win{animation:winGlow .6s}
+.animate-lose{animation:loseShake .6s}
+.animate-fair{animation:fairPulse .6s}
+
+@keyframes winGlow{
+0%{box-shadow:0 0 0}
+50%{box-shadow:0 0 20px #22c55e}
+100%{box-shadow:0 0 0}
+}
+@keyframes loseShake{
+0%{transform:translateX(0)}
+25%{transform:translateX(-6px)}
+50%{transform:translateX(6px)}
+75%{transform:translateX(-6px)}
+100%{transform:translateX(0)}
+}
+@keyframes fairPulse{
+0%{opacity:1}
+50%{opacity:.6}
+100%{opacity:1}
+}
+
+.priceTab p{margin:6px 0;padding:6px;border-bottom:1px solid #1f2937}
+</style>
 </head>
 
 <body>
 <div class="container">
-  <h1>⚙️ Robot Seas — Calculadora Oficial de Trades</h1>
-  <p style="text-align:center;opacity:.8">Frutas • Permanentes • Gamepasses</p>
+<h1>⚙️ Robot Seas — Calculadora de Trades</h1>
 
-  <div class="card">
-    <h2>💰 Valores Oficiais</h2>
+<!-- VALORES -->
+<div class="card">
+<h2>💰 Valores Oficiais</h2>
+<div style="display:flex;gap:10px;margin-bottom:15px;">
+<button onclick="showTab('frutas')">🍎 Frutas</button>
+<button onclick="showTab('perm')">⭐ Perm</button>
+<button onclick="showTab('gamepass')">🎮 Gamepass</button>
+</div>
 
-    <div style="display:flex;gap:10px;margin-bottom:15px;">
-      <button onclick="showTab('frutas')">🍎 Frutas</button>
-      <button onclick="showTab('perm')">⭐ Perm</button>
-      <button onclick="showTab('gamepass')">🎮 Gamepass</button>
-    </div>
+<div id="frutas" class="priceTab">
+<p>Flame — 250.000</p>
+<p>Light — 1.200.000</p>
+<p>Earth — 9.000.000</p>
+<p>Time — 18.000.000</p>
+</div>
 
-    <div id="frutas" class="priceTab">
-      <p>Flame — 250.000</p>
-      <p>Light — 1.200.000</p>
-      <p>Earth — 9.000.000</p>
-      <p>Time — 18.000.000</p>
-    </div>
+<div id="perm" class="priceTab" style="display:none">
+<p>Flame (Perm) — 10.000.000</p>
+<p>Light (Perm) — 14.000.000</p>
+<p>Earth (Perm) — 46.000.000</p>
+<p>Time (Perm) — 58.000.000</p>
+</div>
 
-    <div id="perm" class="priceTab" style="display:none">
-      <p>Flame (Perm) — 10.000.000</p>
-      <p>Light (Perm) — 14.000.000</p>
-      <p>Earth (Perm) — 46.000.000</p>
-      <p>Time (Perm) — 58.000.000</p>
-    </div>
+<div id="gamepass" class="priceTab" style="display:none">
+<p>2x Money — 2.500.000</p>
+<p>2x Maestria — 2.500.000</p>
+<p>Tecnologic Blade — 4.000.000</p>
+<p>VIP — 9.000.000</p>
+</div>
+</div>
 
-    <div id="gamepass" class="priceTab" style="display:none">
-      <p>2x Money — 2.500.000</p>
-      <p>2x Maestria — 2.500.000</p>
-      <p>Tecnologic Blade — 4.000.000</p>
-      <p>VIP — 9.000.000</p>
-    </div>
-  </div>
+<!-- TRADE -->
+<div class="card">
+<h2>🔄 Você oferece</h2>
+<div id="offerSlots"></div>
+</div>
 
-  <div class="card">
-    <h2>🔄 Calculadora de Trade</h2>
+<div class="card">
+<h2>🎯 Você quer</h2>
+<div id="wantSlots"></div>
+</div>
 
-    <h3>Você oferece</h3>
-    <select id="offerItem"></select>
-    <input type="number" id="offerQty" placeholder="Quantidade" min="1" />
+<button onclick="calculateTrade()">Calcular Trade</button>
 
-    <h3>Você quer</h3>
-    <select id="wantItem"></select>
-    <input type="number" id="wantQty" placeholder="Quantidade" min="1" />
+<div class="tradebar">
+<div id="tradebar" class="tradebar-inner"></div>
+</div>
 
-    <button onclick="calculateTrade()">Calcular Trade</button>
+<div id="result" class="result"></div>
+<div id="diff" class="result"></div>
 
-    <div class="result" id="result"></div>
-    <div class="result" id="diff"></div>
-    <div class="result" id="adds"></div>
-  </div>
 </div>
 
 <script>
 function showTab(tab){
-  document.getElementById('frutas').style.display='none';
-  document.getElementById('perm').style.display='none';
-  document.getElementById('gamepass').style.display='none';
-  document.getElementById(tab).style.display='block';
+['frutas','perm','gamepass'].forEach(t=>{
+document.getElementById(t).style.display='none';
+});
+document.getElementById(tab).style.display='block';
 }
 
-const values = {
-  'Flame': 250000,
-  'Light': 1200000,
-  'Earth': 9000000,
-  'Time': 18000000,
-  'Flame (Perm)': 10000000,
-  'Light (Perm)': 14000000,
-  'Earth (Perm)': 46000000,
-  'Time (Perm)': 58000000,
-  '2x Money': 2500000,
-  '2x Maestria': 2500000,
-  'Tecnologic Blade': 4000000,
-  'VIP': 9000000
+const values={
+'Flame':250000,
+'Light':1200000,
+'Earth':9000000,
+'Time':18000000,
+'Flame (Perm)':10000000,
+'Light (Perm)':14000000,
+'Earth (Perm)':46000000,
+'Time (Perm)':58000000,
+'2x Money':2500000,
+'2x Maestria':2500000,
+'Tecnologic Blade':4000000,
+'VIP':9000000
 };
 
-const offerItem = document.getElementById('offerItem');
-const wantItem = document.getElementById('wantItem');
+function createSlots(id){
+const c=document.getElementById(id);
+for(let i=0;i<4;i++){
+const d=document.createElement('div');
+d.className='slot';
+const s=document.createElement('select');
+Object.keys(values).forEach(v=>s.innerHTML+=`<option>${v}</option>`);
+const q=document.createElement('input');
+q.type='number';q.value=0;q.placeholder='Qtd';
+d.appendChild(s);d.appendChild(q);
+c.appendChild(d);
+}
+}
+createSlots('offerSlots');
+createSlots('wantSlots');
 
-Object.keys(values).forEach(item => {
-  offerItem.innerHTML += `<option value="${item}">${item}</option>`;
-  wantItem.innerHTML += `<option value="${item}">${item}</option>`;
+function calcTotal(id){
+let t=0;
+[...document.getElementById(id).children].forEach(s=>{
+const item=s.children[0].value;
+const q=+s.children[1].value;
+if(q>0)t+=values[item]*q;
 });
+return t;
+}
 
-function calculateTrade() {
-  const oItem = offerItem.value;
-  const wItem = wantItem.value;
-  const oQty = Number(document.getElementById('offerQty').value);
-  const wQty = Number(document.getElementById('wantQty').value);
+function calculateTrade(){
+const offer=calcTotal('offerSlots');
+const want=calcTotal('wantSlots');
+const d=offer-want;
 
-  const result = document.getElementById('result');
-  const diff = document.getElementById('diff');
-  const adds = document.getElementById('adds');
+const r=document.getElementById('result');
+const df=document.getElementById('diff');
+const bar=document.getElementById('tradebar');
 
-  if (!oQty || !wQty) {
-    result.textContent = 'Preencha tudo corretamente.';
-    result.className = 'result under';
-    diff.textContent = '';
-    adds.textContent = '';
-    return;
-  }
+r.className='result';
+bar.style.width='50%';
+bar.style.background='#facc15';
 
-  const offerValue = values[oItem] * oQty;
-  const wantValue = values[wItem] * wQty;
-  const difference = offerValue - wantValue;
-
-  if (Math.abs(difference) <= 20000) {
-    result.textContent = '⚖️ TRADE JUSTA';
-    result.className = 'result fair';
-    diff.textContent = 'Diferença insignificante (±20k belly)';
-    adds.textContent = 'Nenhum add necessário.';
-    return;
-  }
-
-  if (difference < 0) {
-    result.textContent = '✅ WIN — Você está ganhando';
-    result.className = 'result ok';
-    diff.textContent = `💰 Ganhando ${Math.abs(difference).toLocaleString()} belly`;
-  } else {
-    result.textContent = '❌ LOSE — Você está perdendo';
-    result.className = 'result under';
-    diff.textContent = `💸 Perdendo ${difference.toLocaleString()} belly`;
-  }
-
-  const needed = Math.abs(difference);
-  const possibleAdds = Object.entries(values)
-    .filter(([_, v]) => v <= needed)
-    .sort((a,b) => b[1]-a[1]);
-
-  if (possibleAdds.length) {
-    adds.textContent = 'Adds sugeridos: ' + possibleAdds.slice(0,2).map(i => i[0]).join(' + ');
-  } else {
-    adds.textContent = 'Adds: nenhum item resolve essa diferença.';
-  }
+if(Math.abs(d)<20000){
+r.textContent='⚖️ TRADE JUSTA';
+r.classList.add('fair','animate-fair');
+df.textContent='';
+bar.style.width='50%';
+bar.style.background='#facc15';
+}
+else if(d<0){
+r.textContent='✅ WIN';
+r.classList.add('ok','animate-win');
+df.textContent=`+${Math.abs(d).toLocaleString()}`;
+bar.style.width='80%';
+bar.style.background='#22c55e';
+}
+else{
+r.textContent='❌ LOSE';
+r.classList.add('under','animate-lose');
+df.textContent=`-${d.toLocaleString()}`;
+bar.style.width='20%';
+bar.style.background='#ef4444';
+}
 }
 </script>
 </body>
