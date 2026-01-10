@@ -7,9 +7,9 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#0b0f1a;color:#e5e7eb}
-.container{max-width:950px;margin:auto;padding:20px}
+.container{max-width:1000px;margin:auto;padding:20px}
 h1{text-align:center;color:#38bdf8}
-.card{background:#111827;border-radius:14px;padding:20px;margin-bottom:20px;box-shadow:0 0 20px rgba(0,0,0,.4)}
+.card{background:#111827;border-radius:14px;padding:20px;margin-bottom:20px}
 h2{color:#facc15}
 
 select,input,button{
@@ -19,49 +19,24 @@ color:#e5e7eb;font-size:16px;margin-bottom:8px
 }
 button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.priceTab p{margin:6px 0;padding:6px;border-bottom:1px solid #1f2937}
+
+.badge{padding:2px 8px;border-radius:8px;font-size:12px;font-weight:bold}
+.common{background:#22c55e}
+.rare{background:#3b82f6}
+.mythic{background:#a855f7}
+.legendary{background:#ef4444}
+
 .slot{display:grid;grid-template-columns:2fr 1fr;gap:10px}
 
-.result{text-align:center;font-size:20px;font-weight:bold;margin-top:10px}
+.tradebar{width:100%;height:18px;border-radius:10px;background:#020617;overflow:hidden;margin:12px 0}
+.tradebar-inner{height:100%;width:50%;background:#facc15;transition:.5s}
+
+.result{text-align:center;font-size:20px;font-weight:bold}
 .ok{color:#22c55e}
 .under{color:#ef4444}
 .fair{color:#facc15}
-
-/* Barra de trade */
-.tradebar{
-width:100%;height:18px;border-radius:10px;
-background:#020617;overflow:hidden;margin:12px 0
-}
-.tradebar-inner{
-height:100%;width:50%;
-background:#facc15;
-transition:all .6s ease;
-}
-
-/* Animações */
-.animate-win{animation:winGlow .6s}
-.animate-lose{animation:loseShake .6s}
-.animate-fair{animation:fairPulse .6s}
-
-@keyframes winGlow{
-0%{box-shadow:0 0 0}
-50%{box-shadow:0 0 20px #22c55e}
-100%{box-shadow:0 0 0}
-}
-@keyframes loseShake{
-0%{transform:translateX(0)}
-25%{transform:translateX(-6px)}
-50%{transform:translateX(6px)}
-75%{transform:translateX(-6px)}
-100%{transform:translateX(0)}
-}
-@keyframes fairPulse{
-0%{opacity:1}
-50%{opacity:.6}
-100%{opacity:1}
-}
-
-.priceTab p{margin:6px 0;padding:6px;border-bottom:1px solid #1f2937}
-.tabs{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
 </style>
 </head>
 
@@ -69,67 +44,24 @@ transition:all .6s ease;
 <div class="container">
 <h1>⚙️ Robot Seas — Calculadora de Trades</h1>
 
-<!-- VALORES -->
 <div class="card">
-<h2>💰 Valores Oficiais</h2>
+<h2>💰 Valores</h2>
 
 <div class="tabs">
 <button onclick="showTab('frutas')">🍎 Frutas</button>
 <button onclick="showTab('perm')">⭐ Perm</button>
 <button onclick="showTab('gamepass')">🎮 Gamepass</button>
 <button onclick="showTab('tokens')">🎟️ Tokens & Robux</button>
+<button onclick="showTab('ranking')">🏆 Ranking</button>
 </div>
 
-<!-- FRUTAS -->
-<div id="frutas" class="priceTab">
-<p>Flame — 250.000</p>
-<p>Light — 1.200.000</p>
-<p>Earth — 9.000.000</p>
-<p>Time — 18.000.000</p>
+<div id="frutas" class="priceTab"></div>
+<div id="perm" class="priceTab" style="display:none"></div>
+<div id="gamepass" class="priceTab" style="display:none"></div>
+<div id="tokens" class="priceTab" style="display:none"></div>
+<div id="ranking" class="priceTab" style="display:none"></div>
 </div>
 
-<!-- PERM -->
-<div id="perm" class="priceTab" style="display:none">
-<p>Flame (Perm) — 10.000.000</p>
-<p>Light (Perm) — 14.000.000</p>
-<p>Earth (Perm) — 46.000.000</p>
-<p>Time (Perm) — 58.000.000</p>
-</div>
-
-<!-- GAMEPASS -->
-<div id="gamepass" class="priceTab" style="display:none">
-<p>2x Money — 2.500.000</p>
-<p>2x Maestria — 2.500.000</p>
-<p>Tecnologic Blade — 4.000.000</p>
-<p>VIP — 9.000.000</p>
-</div>
-
-<!-- TOKENS -->
-<div id="tokens" class="priceTab" style="display:none">
-<p><strong>🎟️ Conversão</strong></p>
-<p>10 Token = 1 Robux</p>
-
-<p><strong>🎮 Gamepasses (Robux)</strong></p>
-<p>2x Money — 50 robux or 500 tokens</p>
-<p>2x Maestria — 50 robux or 500 tokens</p>
-<p>Tecnologic Blade — 100 robux or 1000 tokens</p>
-<p>VIP — 225 robux or 2250 tokens</p>
-
-<p><strong>🍎 Frutas (Robux)</strong></p>
-<p>Flame — 63 robux or 630 tokens</p>
-<p>Light — 106 Robux or 1060 tokens</p>
-<p>Earth — 188 Robux or 1880 tokens</p>
-<p>Time — 225 robux or 2250 tokens</p>
-
-<p><strong>⭐ Frutas Perm (Robux)</strong></p>
-<p>Flame (Perm) — 250 Robux or 2500 token</p>
-<p>Light (Perm) — 425 Robux or 4250 tokens</p>
-<p>Earth (Perm) — 750 Robux or 7500 tokens</p>
-<p>Time (Perm) — 900 Robux or 9000 tokens</p>
-</div>
-</div>
-
-<!-- TRADE -->
 <div class="card">
 <h2>🔄 Você oferece</h2>
 <div id="offerSlots"></div>
@@ -153,27 +85,117 @@ transition:all .6s ease;
 
 <script>
 function showTab(tab){
-['frutas','perm','gamepass','tokens'].forEach(t=>{
+['frutas','perm','gamepass','tokens','ranking'].forEach(t=>{
 document.getElementById(t).style.display='none';
 });
 document.getElementById(tab).style.display='block';
 }
 
-const values={
-'Flame':250000,
-'Light':1200000,
-'Earth':9000000,
-'Time':18000000,
-'Flame (Perm)':10000000,
-'Light (Perm)':14000000,
-'Earth (Perm)':46000000,
-'Time (Perm)':58000000,
+/* PREÇO BASE */
+const baseValues={
+'Flame':3125000,
+'Light':5480000,
+'Earth':9375000,
+'Time':11250000,
+'Flame (Perm)':1250000,
+'Light (Perm)':21250000,
+'Earth (Perm)':37250000,
+'Time (Perm)':45000000,
 '2x Money':2500000,
 '2x Maestria':2500000,
-'Tecnologic Blade':4000000,
-'VIP':9000000
+'Tecnologic Blade':5000000,
+'VIP':11250000
 };
 
+/* PREÇO ATUAL */
+const values={
+'Flame':3125000,
+'Light':5480000,
+'Earth':9375000,
+'Time':11250000,
+'Flame (Perm)':12500000,
+'Light (Perm)':21250000,
+'Earth (Perm)':37250000,
+'Time (Perm)':45000000,
+'2x Money':2500000,
+'2x Maestria':2500000,
+'Tecnologic Blade':5000000,
+'VIP':11250000
+};
+
+/* RARIDADE */
+const rarity={
+'Flame':'rare',
+'Light':'epico',
+'Earth':'legendary',
+'Time':'mythic',
+'Flame (Perm)':'rare',
+'Light (Perm)':'epico',
+'Earth (Perm)':'legendary',
+'Time (Perm)':'mythic',
+'2x Money':'legendary',
+'2x Maestria':'legendary',
+'Tecnologic Blade':'mythic',
+'VIP':'mythic'
+};
+
+function trend(item){
+const base=baseValues[item];
+const cur=values[item];
+const pct=((cur-base)/base)*100;
+if(Math.abs(pct)>=20) return pct>0?`📈 Subindo muito (${pct.toFixed(1)}%)`:`📉 Caindo muito (${pct.toFixed(1)}%)`;
+if(pct>0) return `⬆️ Preço normal (+${pct.toFixed(1)}%)`;
+if(pct<0) return `⬇️ Preço normal (${pct.toFixed(1)}%)`;
+return `➖ Estável`;
+}
+
+function renderPrices(){
+const f=document.getElementById('frutas');
+const p=document.getElementById('perm');
+const g=document.getElementById('gamepass');
+const t=document.getElementById('tokens');
+const r=document.getElementById('ranking');
+
+const list=(arr)=>arr.map(i=>`
+<p>
+${i} — ${values[i].toLocaleString()}
+<span class="badge ${rarity[i]}">${rarity[i].toUpperCase()}</span><br>
+<small>Base: ${baseValues[i].toLocaleString()} | ${trend(i)}</small>
+</p>`).join('');
+
+f.innerHTML=list(['Flame','Light','Earth','Time']);
+p.innerHTML=list(['Flame (Perm)','Light (Perm)','Earth (Perm)','Time (Perm)']);
+g.innerHTML=list(['2x Money','2x Maestria','Tecnologic Blade','VIP']);
+
+t.innerHTML=`
+<p><strong>🎟️ Conversão</strong></p>
+<p>10 Tokens = 1 Robux</p>
+
+<p><strong>🎮 Gamepasses</strong></p>
+<p>2x Money — 50 Robux / 500 Tokens</p>
+<p>2x Maestria — 50 Robux / 500 Tokens</p>
+<p>Tecnologic Blade — 100 Robux / 1000 Tokens</p>
+<p>VIP — 225 Robux / 2250 Tokens</p>
+
+<p><strong>🍎 Frutas</strong></p>
+<p>Flame — 63 Robux / 630 Tokens</p>
+<p>Light — 106 Robux / 1060 Tokens</p>
+<p>Earth — 188 Robux / 1880 Tokens</p>
+<p>Time — 225 Robux / 2250 Tokens</p>
+
+<p><strong>⭐ Frutas Perm</strong></p>
+<p>Flame (Perm) — 250 Robux / 2500 Tokens</p>
+<p>Light (Perm) — 425 Robux / 4250 Tokens</p>
+<p>Earth (Perm) — 750 Robux / 7500 Tokens</p>
+<p>Time (Perm) — 900 Robux / 9000 Tokens</p>
+`;
+
+const sorted=Object.keys(values).sort((a,b)=>values[b]-values[a]);
+r.innerHTML=sorted.map((i,n)=>`<p>#${n+1} ${i} — ${values[i].toLocaleString()}</p>`).join('');
+}
+renderPrices();
+
+/* TRADE */
 function createSlots(id){
 const c=document.getElementById(id);
 for(let i=0;i<4;i++){
@@ -182,11 +204,10 @@ d.className='slot';
 const s=document.createElement('select');
 Object.keys(values).forEach(v=>s.innerHTML+=`<option>${v}</option>`);
 const q=document.createElement('input');
-q.type='number';q.value=0;q.placeholder='Qtd';
+q.type='number';q.value=0;
 d.appendChild(s);d.appendChild(q);
 c.appendChild(d);
-}
-}
+}}
 createSlots('offerSlots');
 createSlots('wantSlots');
 
@@ -201,10 +222,9 @@ return t;
 }
 
 function calculateTrade(){
-const offer=calcTotal('offerSlots');
-const want=calcTotal('wantSlots');
-const d=offer-want;
-
+const o=calcTotal('offerSlots');
+const w=calcTotal('wantSlots');
+const d=o-w;
 const r=document.getElementById('result');
 const df=document.getElementById('diff');
 const bar=document.getElementById('tradebar');
@@ -214,23 +234,15 @@ bar.style.width='50%';
 bar.style.background='#facc15';
 
 if(Math.abs(d)<20000){
-r.textContent='⚖️ TRADE JUSTA';
-r.classList.add('fair','animate-fair');
-df.textContent='';
+r.textContent='⚖️ TRADE JUSTA';r.classList.add('fair');df.textContent='';
 }
 else if(d<0){
-r.textContent='✅ WIN';
-r.classList.add('ok','animate-win');
-df.textContent=`+${Math.abs(d).toLocaleString()}`;
-bar.style.width='80%';
-bar.style.background='#22c55e';
+r.textContent='✅ WIN';r.classList.add('ok');df.textContent=`+${Math.abs(d).toLocaleString()}`;
+bar.style.width='80%';bar.style.background='#22c55e';
 }
 else{
-r.textContent='❌ LOSE';
-r.classList.add('under','animate-lose');
-df.textContent=`-${d.toLocaleString()}`;
-bar.style.width='20%';
-bar.style.background='#ef4444';
+r.textContent='❌ LOSE';r.classList.add('under');df.textContent=`-${d.toLocaleString()}`;
+bar.style.width='20%';bar.style.background='#ef4444';
 }
 }
 </script>
