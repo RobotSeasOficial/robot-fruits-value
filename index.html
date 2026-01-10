@@ -61,6 +61,7 @@ transition:all .6s ease;
 }
 
 .priceTab p{margin:6px 0;padding:6px;border-bottom:1px solid #1f2937}
+.tabs{display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap}
 </style>
 </head>
 
@@ -71,31 +72,60 @@ transition:all .6s ease;
 <!-- VALORES -->
 <div class="card">
 <h2>💰 Valores Oficiais</h2>
-<div style="display:flex;gap:10px;margin-bottom:15px;">
+
+<div class="tabs">
 <button onclick="showTab('frutas')">🍎 Frutas</button>
 <button onclick="showTab('perm')">⭐ Perm</button>
 <button onclick="showTab('gamepass')">🎮 Gamepass</button>
+<button onclick="showTab('tokens')">🎟️ Tokens & Robux</button>
 </div>
 
+<!-- FRUTAS -->
 <div id="frutas" class="priceTab">
-<p>Flame — 1.000.000</p>
-<p>Light — 2.000.000</p>
-<p>Earth — 14.000.000</p>
-<p>Time — 20.000.000</p>
+<p>Flame — 250.000</p>
+<p>Light — 1.200.000</p>
+<p>Earth — 9.000.000</p>
+<p>Time — 18.000.000</p>
 </div>
 
+<!-- PERM -->
 <div id="perm" class="priceTab" style="display:none">
-<p>Flame (Perm) — 13.000.000</p>
-<p>Light (Perm) — 17.000.000</p>
-<p>Earth (Perm) — 40.000.000</p>
-<p>Time (Perm) — 50.000.000</p>
+<p>Flame (Perm) — 10.000.000</p>
+<p>Light (Perm) — 14.000.000</p>
+<p>Earth (Perm) — 46.000.000</p>
+<p>Time (Perm) — 58.000.000</p>
 </div>
 
+<!-- GAMEPASS -->
 <div id="gamepass" class="priceTab" style="display:none">
 <p>2x Money — 2.500.000</p>
-<p>2x Maestria — 3.000.000</p>
-<p>Tecnologic Blade — 6.000.000</p>
-<p>VIP — 12.000.000</p>
+<p>2x Maestria — 2.500.000</p>
+<p>Tecnologic Blade — 4.000.000</p>
+<p>VIP — 9.000.000</p>
+</div>
+
+<!-- TOKENS -->
+<div id="tokens" class="priceTab" style="display:none">
+<p><strong>🎟️ Conversão</strong></p>
+<p>10 Token = 1 Robux</p>
+
+<p><strong>🎮 Gamepasses (Robux)</strong></p>
+<p>2x Money — 50 robux or 500 tokens</p>
+<p>2x Maestria — 50 robux or 500 tokens</p>
+<p>Tecnologic Blade — 100 robux or 1000 tokens</p>
+<p>VIP — 225 robux or 2250 tokens</p>
+
+<p><strong>🍎 Frutas (Robux)</strong></p>
+<p>Flame — 63 robux or 630 tokens</p>
+<p>Light — 106 Robux or 1060 tokens</p>
+<p>Earth — 188 Robux or 1880 tokens</p>
+<p>Time — 225 robux or 2250 tokens</p>
+
+<p><strong>⭐ Frutas Perm (Robux)</strong></p>
+<p>Flame (Perm) — 250 Robux or 2500 token</p>
+<p>Light (Perm) — 425 Robux or 4250 tokens</p>
+<p>Earth (Perm) — 750 Robux or 7500 tokens</p>
+<p>Time (Perm) — 900 Robux or 9000 tokens</p>
 </div>
 </div>
 
@@ -123,25 +153,25 @@ transition:all .6s ease;
 
 <script>
 function showTab(tab){
-['frutas','perm','gamepass'].forEach(t=>{
+['frutas','perm','gamepass','tokens'].forEach(t=>{
 document.getElementById(t).style.display='none';
 });
 document.getElementById(tab).style.display='block';
 }
 
 const values={
-'Flame':1000000,
-'Light':2000000,
-'Earth':14000000,
-'Time':20000000,
-'Flame (Perm)':13000000,
-'Light (Perm)':17000000,
-'Earth (Perm)':40000000,
-'Time (Perm)':50000000,
+'Flame':250000,
+'Light':1200000,
+'Earth':9000000,
+'Time':18000000,
+'Flame (Perm)':10000000,
+'Light (Perm)':14000000,
+'Earth (Perm)':46000000,
+'Time (Perm)':58000000,
 '2x Money':2500000,
-'2x Maestria':3000000,
-'Tecnologic Blade':6000000,
-'VIP':12000000
+'2x Maestria':2500000,
+'Tecnologic Blade':4000000,
+'VIP':9000000
 };
 
 function createSlots(id){
@@ -187,8 +217,6 @@ if(Math.abs(d)<20000){
 r.textContent='⚖️ TRADE JUSTA';
 r.classList.add('fair','animate-fair');
 df.textContent='';
-bar.style.width='50%';
-bar.style.background='#facc15';
 }
 else if(d<0){
 r.textContent='✅ WIN';
