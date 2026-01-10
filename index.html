@@ -25,8 +25,9 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 .badge{padding:2px 8px;border-radius:8px;font-size:12px;font-weight:bold}
 .common{background:#22c55e}
 .rare{background:#3b82f6}
-.mythic{background:#a855f7}
+.epico{background:#eab308}
 .legendary{background:#ef4444}
+.mythic{background:#a855f7}
 
 .slot{display:grid;grid-template-columns:2fr 1fr;gap:10px}
 
@@ -37,12 +38,17 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 .ok{color:#22c55e}
 .under{color:#ef4444}
 .fair{color:#facc15}
+
+.liq-high{color:#22c55e;font-weight:bold}
+.liq-mid{color:#facc15;font-weight:bold}
+.liq-low{color:#ef4444;font-weight:bold}
 </style>
 </head>
 
 <body>
 <div class="container">
 <h1>⚙️ Robot Seas — Calculadora de Trades</h1>
+<p id="marketVersion" style="text-align:center;opacity:.7;font-size:14px"></p>
 
 <div class="card">
 <h2>💰 Valores</h2>
@@ -91,24 +97,13 @@ document.getElementById(t).style.display='none';
 document.getElementById(tab).style.display='block';
 }
 
+/* VERSÃO DO MERCADO */
+const MARKET_VERSION = "v2.2";
+document.getElementById("marketVersion").innerText =
+`📦 Mercado ${MARKET_VERSION} — atualizado hoje`;
+
 /* PREÇO BASE */
 const baseValues={
-'Flame':3125000,
-'Light':5480000,
-'Earth':9375000,
-'Time':11250000,
-'Flame (Perm)':1250000,
-'Light (Perm)':21250000,
-'Earth (Perm)':37250000,
-'Time (Perm)':45000000,
-'2x Money':2500000,
-'2x Maestria':2500000,
-'Tecnologic Blade':5000000,
-'VIP':11250000
-};
-
-/* PREÇO ATUAL */
-const values={
 'Flame':3125000,
 'Light':5480000,
 'Earth':9375000,
@@ -122,6 +117,9 @@ const values={
 'Tecnologic Blade':5000000,
 'VIP':11250000
 };
+
+/* PREÇO ATUAL */
+const values={...baseValues};
 
 /* RARIDADE */
 const rarity={
@@ -139,65 +137,60 @@ const rarity={
 'VIP':'mythic'
 };
 
+/* LIQUIDEZ */
+let liquidity = JSON.parse(localStorage.getItem("liquidity")) || {};
+
+function addLiquidity(item,q){
+liquidity[item]=(liquidity[item]||0)+q;
+localStorage.setItem("liquidity",JSON.stringify(liquidity));
+}
+
+function showLiquidity(item){
+const v=liquidity[item]||0;
+if(v>=20) return `<span class="liq-high">🟢 Alta liquidez</span>`;
+if(v>=8) return `<span class="liq-mid">🟡 Média liquidez</span>`;
+return `<span class="liq-low">🔴 Baixa liquidez</span>`;
+}
+
+/* TENDÊNCIA */
 function trend(item){
 const base=baseValues[item];
 const cur=values[item];
 const pct=((cur-base)/base)*100;
 if(Math.abs(pct)>=20) return pct>0?`📈 Subindo muito (${pct.toFixed(1)}%)`:`📉 Caindo muito (${pct.toFixed(1)}%)`;
-if(pct>0) return `⬆️ Preço normal (+${pct.toFixed(1)}%)`;
-if(pct<0) return `⬇️ Preço normal (${pct.toFixed(1)}%)`;
+if(pct!==0) return `↔️ Preço normal (${pct.toFixed(1)}%)`;
 return `➖ Estável`;
 }
 
 function renderPrices(){
-const f=document.getElementById('frutas');
-const p=document.getElementById('perm');
-const g=document.getElementById('gamepass');
-const t=document.getElementById('tokens');
-const r=document.getElementById('ranking');
-
-const list=(arr)=>arr.map(i=>`
+const list=arr=>arr.map(i=>`
 <p>
 ${i} — ${values[i].toLocaleString()}
 <span class="badge ${rarity[i]}">${rarity[i].toUpperCase()}</span><br>
-<small>Base: ${baseValues[i].toLocaleString()} | ${trend(i)}</small>
+<small>Base: ${baseValues[i].toLocaleString()} | ${trend(i)}<br>
+${showLiquidity(i)}</small>
 </p>`).join('');
 
-f.innerHTML=list(['Flame','Light','Earth','Time']);
-p.innerHTML=list(['Flame (Perm)','Light (Perm)','Earth (Perm)','Time (Perm)']);
-g.innerHTML=list(['2x Money','2x Maestria','Tecnologic Blade','VIP']);
+frutas.innerHTML=list(['Flame','Light','Earth','Time']);
+perm.innerHTML=list(['Flame (Perm)','Light (Perm)','Earth (Perm)','Time (Perm)']);
+gamepass.innerHTML=list(['2x Money','2x Maestria','Tecnologic Blade','VIP']);
 
-t.innerHTML=`
-<p><strong>🎟️ Conversão</strong></p>
-<p>10 Tokens = 1 Robux</p>
-
-<p><strong>🎮 Gamepasses</strong></p>
+tokens.innerHTML=`
+<p><b>10 Tokens = 1 Robux</b></p>
+<p>VIP — 225 Robux / 2250 Tokens</p>
 <p>2x Money — 50 Robux / 500 Tokens</p>
 <p>2x Maestria — 50 Robux / 500 Tokens</p>
 <p>Tecnologic Blade — 100 Robux / 1000 Tokens</p>
-<p>VIP — 225 Robux / 2250 Tokens</p>
-
-<p><strong>🍎 Frutas</strong></p>
-<p>Flame — 63 Robux / 630 Tokens</p>
-<p>Light — 106 Robux / 1060 Tokens</p>
-<p>Earth — 188 Robux / 1880 Tokens</p>
-<p>Time — 225 Robux / 2250 Tokens</p>
-
-<p><strong>⭐ Frutas Perm</strong></p>
-<p>Flame (Perm) — 250 Robux / 2500 Tokens</p>
-<p>Light (Perm) — 425 Robux / 4250 Tokens</p>
-<p>Earth (Perm) — 750 Robux / 7500 Tokens</p>
-<p>Time (Perm) — 900 Robux / 9000 Tokens</p>
 `;
 
-const sorted=Object.keys(values).sort((a,b)=>values[b]-values[a]);
-r.innerHTML=sorted.map((i,n)=>`<p>#${n+1} ${i} — ${values[i].toLocaleString()}</p>`).join('');
+ranking.innerHTML=Object.keys(values)
+.sort((a,b)=>values[b]-values[a])
+.map((i,n)=>`<p>#${n+1} ${i} — ${values[i].toLocaleString()}</p>`).join('');
 }
 renderPrices();
 
-/* TRADE */
+/* SLOTS */
 function createSlots(id){
-const c=document.getElementById(id);
 for(let i=0;i<4;i++){
 const d=document.createElement('div');
 d.className='slot';
@@ -205,8 +198,8 @@ const s=document.createElement('select');
 Object.keys(values).forEach(v=>s.innerHTML+=`<option>${v}</option>`);
 const q=document.createElement('input');
 q.type='number';q.value=0;
-d.appendChild(s);d.appendChild(q);
-c.appendChild(d);
+d.append(s,q);
+document.getElementById(id).appendChild(d);
 }}
 createSlots('offerSlots');
 createSlots('wantSlots');
@@ -214,9 +207,9 @@ createSlots('wantSlots');
 function calcTotal(id){
 let t=0;
 [...document.getElementById(id).children].forEach(s=>{
-const item=s.children[0].value;
+const i=s.children[0].value;
 const q=+s.children[1].value;
-if(q>0)t+=values[item]*q;
+if(q>0){t+=values[i]*q;addLiquidity(i,q);}
 });
 return t;
 }
@@ -225,25 +218,16 @@ function calculateTrade(){
 const o=calcTotal('offerSlots');
 const w=calcTotal('wantSlots');
 const d=o-w;
-const r=document.getElementById('result');
-const df=document.getElementById('diff');
-const bar=document.getElementById('tradebar');
+const r=result,df=diff,bar=tradebar;
 
+bar.style.width='50%';bar.style.background='#facc15';
 r.className='result';
-bar.style.width='50%';
-bar.style.background='#facc15';
 
-if(Math.abs(d)<20000){
-r.textContent='⚖️ TRADE JUSTA';r.classList.add('fair');df.textContent='';
-}
-else if(d<0){
-r.textContent='✅ WIN';r.classList.add('ok');df.textContent=`+${Math.abs(d).toLocaleString()}`;
-bar.style.width='80%';bar.style.background='#22c55e';
-}
-else{
-r.textContent='❌ LOSE';r.classList.add('under');df.textContent=`-${d.toLocaleString()}`;
-bar.style.width='20%';bar.style.background='#ef4444';
-}
+if(Math.abs(d)<20000){r.textContent='⚖️ TRADE JUSTA';r.classList.add('fair');df.textContent='';}
+else if(d<0){r.textContent='✅ WIN';r.classList.add('ok');df.textContent=`+${Math.abs(d).toLocaleString()}`;bar.style.width='80%';bar.style.background='#22c55e';}
+else{r.textContent='❌ LOSE';r.classList.add('under');df.textContent=`-${d.toLocaleString()}`;bar.style.width='20%';bar.style.background='#ef4444';}
+
+renderPrices();
 }
 </script>
 </body>
