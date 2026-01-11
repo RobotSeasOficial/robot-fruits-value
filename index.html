@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Robot Seas Trader</title>
-
+      v2.3
 <style>
 body{margin:0;font-family:Arial;background:#0b0f1a;color:#e5e7eb}
-.container{max-width:1000px;margin:auto;padding:20px}
+.container{max-width:1100px;margin:auto;padding:20px}
 h1{text-align:center;color:#38bdf8}
 .card{background:#111827;border-radius:14px;padding:20px;margin-bottom:20px}
 h2{color:#facc15}
 
-select,input,button{
+button,select,input{
 width:100%;padding:10px;border-radius:10px;
 border:1px solid #1f2937;background:#020617;
 color:#e5e7eb;font-size:16px;margin-bottom:8px
@@ -20,35 +20,28 @@ color:#e5e7eb;font-size:16px;margin-bottom:8px
 button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
-.priceTab p{margin:6px 0;padding:6px;border-bottom:1px solid #1f2937}
+.priceTab p{padding:10px;border-bottom:1px solid #1f2937}
 
 .badge{padding:2px 8px;border-radius:8px;font-size:12px;font-weight:bold}
-.common{background:#22c55e}
 .rare{background:#3b82f6}
-.epico{background:#eab308}
 .legendary{background:#ef4444}
 .mythic{background:#a855f7}
+.exclusive{background:#f59e0b;color:#020617}
 
 .slot{display:grid;grid-template-columns:2fr 1fr;gap:10px}
 
 .tradebar{width:100%;height:18px;border-radius:10px;background:#020617;overflow:hidden;margin:12px 0}
-.tradebar-inner{height:100%;width:50%;background:#facc15;transition:.5s}
+.tradebar-inner{height:100%;width:50%;background:#facc15;transition:.4s}
 
 .result{text-align:center;font-size:20px;font-weight:bold}
 .ok{color:#22c55e}
 .under{color:#ef4444}
 .fair{color:#facc15}
-
-.liq-high{color:#22c55e;font-weight:bold}
-.liq-mid{color:#facc15;font-weight:bold}
-.liq-low{color:#ef4444;font-weight:bold}
 </style>
 </head>
-
 <body>
 <div class="container">
-<h1>⚙️ Robot Seas — Calculadora de Trades</h1>
-<p id="marketVersion" style="text-align:center;opacity:.7;font-size:14px"></p>
+<h1>⚙️ Robot Seas — Trader</h1>
 
 <div class="card">
 <h2>💰 Valores</h2>
@@ -57,13 +50,15 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 <button onclick="showTab('frutas')">🍎 Frutas</button>
 <button onclick="showTab('perm')">⭐ Perm</button>
 <button onclick="showTab('gamepass')">🎮 Gamepass</button>
-<button onclick="showTab('tokens')">🎟️ Tokens & Robux</button>
+<button onclick="showTab('armas')">🗡️ Armas</button>
+<button onclick="showTab('tokens')">🎟️ Tokens</button>
 <button onclick="showTab('ranking')">🏆 Ranking</button>
 </div>
 
 <div id="frutas" class="priceTab"></div>
 <div id="perm" class="priceTab" style="display:none"></div>
 <div id="gamepass" class="priceTab" style="display:none"></div>
+<div id="armas" class="priceTab" style="display:none"></div>
 <div id="tokens" class="priceTab" style="display:none"></div>
 <div id="ranking" class="priceTab" style="display:none"></div>
 </div>
@@ -80,10 +75,7 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 
 <button onclick="calculateTrade()">Calcular Trade</button>
 
-<div class="tradebar">
-<div id="tradebar" class="tradebar-inner"></div>
-</div>
-
+<div class="tradebar"><div id="tradebar" class="tradebar-inner"></div></div>
 <div id="result" class="result"></div>
 <div id="diff" class="result"></div>
 
@@ -91,144 +83,129 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 
 <script>
 function showTab(tab){
-['frutas','perm','gamepass','tokens','ranking'].forEach(t=>{
-document.getElementById(t).style.display='none';
-});
+['frutas','perm','gamepass','armas','tokens','ranking']
+.forEach(t=>document.getElementById(t).style.display='none');
 document.getElementById(tab).style.display='block';
 }
 
-/* VERSÃO DO MERCADO */
-const MARKET_VERSION = "v2.2";
-document.getElementById("marketVersion").innerText =
-`📦 Mercado ${MARKET_VERSION} — atualizado hoje`;
-
-/* PREÇO BASE */
+/* ================= BASE (NUNCA MUDA) ================= */
 const baseValues={
-'Flame':3125000,
-'Light':5480000,
-'Earth':9375000,
-'Time':11250000,
-'Flame (Perm)':12500000,
-'Light (Perm)':21250000,
-'Earth (Perm)':37250000,
-'Time (Perm)':45000000,
-'2x Money':2500000,
-'2x Maestria':2500000,
-'Tecnologic Blade':5000000,
-'VIP':11250000
+'Flame':250000,'Light':750000,'Earth':4750000,'Time':7500000,
+'Flame (Perm)':12500000,'Light (Perm)':21250000,'Earth (Perm)':37250000,'Time (Perm)':45000000,
+'2x Money':2500000,'2x Maestria':2500000,'VIP':11250000,
+'Tecnologic Blade':5000000,'Golden Technology Gun':3750000
 };
 
-/* PREÇO ATUAL */
+/* ================= PREÇO ATUAL ================= */
 const values={...baseValues};
 
-/* RARIDADE */
+/* ================= RARIDADE ================= */
 const rarity={
-'Flame':'rare',
-'Light':'epico',
-'Earth':'legendary',
-'Time':'mythic',
-'Flame (Perm)':'rare',
-'Light (Perm)':'epico',
-'Earth (Perm)':'legendary',
-'Time (Perm)':'mythic',
-'2x Money':'legendary',
-'2x Maestria':'legendary',
-'Tecnologic Blade':'mythic',
-'VIP':'mythic'
+'Flame':'rare','Light':'rare','Earth':'legendary','Time':'mythic',
+'Flame (Perm)':'rare','Light (Perm)':'rare','Earth (Perm)':'legendary','Time (Perm)':'mythic',
+'2x Money':'legendary','2x Maestria':'legendary','VIP':'mythic',
+'Tecnologic Blade':'mythic','Golden Technology Gun':'exclusive'
 };
 
-/* LIQUIDEZ */
-let liquidity = JSON.parse(localStorage.getItem("liquidity")) || {};
+/* ================= PREVISÃO (EDITA AQUI) ================= */
+const previsao={
+'Flame':'📉 Pode cair, baixa demanda',
+'Light':'⏸️ Estável no mercado',
+'Earth':'📈 Tendência de alta',
+'Time':'🚀 Muito valorizada',
 
-function addLiquidity(item,q){
-liquidity[item]=(liquidity[item]||0)+q;
-localStorage.setItem("liquidity",JSON.stringify(liquidity));
-}
+'Flame (Perm)':'📉 Pouco procurada',
+'Light (Perm)':'⏸️ Mercado estável',
+'Earth (Perm)':'📈 Alta demanda',
+'Time (Perm)':'🚀 Meta atual',
 
-function showLiquidity(item){
-const v=liquidity[item]||0;
-if(v>=20) return `<span class="liq-high">🟢 Alta liquidez</span>`;
-if(v>=8) return `<span class="liq-mid">🟡 Média liquidez</span>`;
-return `<span class="liq-low">🔴 Baixa liquidez</span>`;
-}
+'2x Money':'⏸️ Sempre útil',
+'2x Maestria':'⏸️ Demanda média',
+'VIP':'📈 Alta procura',
 
-/* TENDÊNCIA */
-function trend(item){
-const base=baseValues[item];
-const cur=values[item];
-const pct=((cur-base)/base)*100;
-if(Math.abs(pct)>=20) return pct>0?`📈 Subindo muito (${pct.toFixed(1)}%)`:`📉 Caindo muito (${pct.toFixed(1)}%)`;
-if(pct!==0) return `↔️ Preço normal (${pct.toFixed(1)}%)`;
-return `➖ Estável`;
-}
+'Tecnologic Blade':'🚀 Arma META',
+'Golden Technology Gun':'🔥 EXCLUSIVA — Pode subir Em 566%'
+};
 
-function renderPrices(){
-const list=arr=>arr.map(i=>`
+/* ================= RENDER ================= */
+function renderTab(id,items){
+document.getElementById(id).innerHTML=items.map(i=>`
 <p>
-${i} — ${values[i].toLocaleString()}
+<strong>${i}</strong>
 <span class="badge ${rarity[i]}">${rarity[i].toUpperCase()}</span><br>
-<small>Base: ${baseValues[i].toLocaleString()} | ${trend(i)}<br>
-${showLiquidity(i)}</small>
+💰 Atual: ${values[i].toLocaleString()}<br>
+📦 Base: ${baseValues[i].toLocaleString()}<br>
+🔮 ${previsao[i]}
 </p>`).join('');
+}
 
-frutas.innerHTML=list(['Flame','Light','Earth','Time']);
-perm.innerHTML=list(['Flame (Perm)','Light (Perm)','Earth (Perm)','Time (Perm)']);
-gamepass.innerHTML=list(['2x Money','2x Maestria','Tecnologic Blade','VIP']);
+renderTab('frutas',['Flame','Light','Earth','Time']);
+renderTab('perm',['Flame (Perm)','Light (Perm)','Earth (Perm)','Time (Perm)']);
+renderTab('gamepass',['2x Money','2x Maestria','VIP']);
+renderTab('armas',['Tecnologic Blade','Golden Technology Gun']);
 
-tokens.innerHTML=`
-<p><b>10 Tokens = 1 Robux</b></p>
+document.getElementById('tokens').innerHTML=`
+<p>🎟️ <strong>Conversão</strong></p>
+<p>10 Tokens = 1 Robux</p>
+<p>Time perm — 900 robux / 9000 tokens 
+<p>Earth perm — 750 robux / 7500 tokens
+<p>Light perm —  425 robux / 4250 tokens
+<p>Flame perm  — 250 robux / 2500 tokens
 <p>VIP — 225 Robux / 2250 Tokens</p>
-<p>2x Money — 50 Robux / 500 Tokens</p>
-<p>2x Maestria — 50 Robux / 500 Tokens</p>
 <p>Tecnologic Blade — 100 Robux / 1000 Tokens</p>
+<p>Golden Technology Gun  —  75 robux / 750 tokens
+<p>2x money  — 50 robux / 500 tokens
+<p> 2x maestria  — 50 robux / 500 tokens
+<p>
+<p> Time  — 150 Robux / 1500 tokens
+<p> Earth  —  95 robux / 950 tokens
+<p> Light  —  15 robux / 150 Tokens
+<p> flame  — 5 robux / 50 tokens
 `;
 
-ranking.innerHTML=Object.keys(values)
-.sort((a,b)=>values[b]-values[a])
-.map((i,n)=>`<p>#${n+1} ${i} — ${values[i].toLocaleString()}</p>`).join('');
-}
-renderPrices();
+const rank=Object.keys(values).sort((a,b)=>values[b]-values[a]);
+document.getElementById('ranking').innerHTML=rank.map((i,n)=>
+`<p>#${n+1} ${i} — ${values[i].toLocaleString()}</p>`).join('');
 
-/* SLOTS */
+/* ================= TRADE ================= */
 function createSlots(id){
+const c=document.getElementById(id);
 for(let i=0;i<4;i++){
 const d=document.createElement('div');
 d.className='slot';
 const s=document.createElement('select');
 Object.keys(values).forEach(v=>s.innerHTML+=`<option>${v}</option>`);
-const q=document.createElement('input');
-q.type='number';q.value=0;
-d.append(s,q);
-document.getElementById(id).appendChild(d);
+const q=document.createElement('input');q.type='number';q.value=0;
+d.appendChild(s);d.appendChild(q);c.appendChild(d);
 }}
-createSlots('offerSlots');
-createSlots('wantSlots');
+createSlots('offerSlots');createSlots('wantSlots');
 
 function calcTotal(id){
 let t=0;
 [...document.getElementById(id).children].forEach(s=>{
-const i=s.children[0].value;
-const q=+s.children[1].value;
-if(q>0){t+=values[i]*q;addLiquidity(i,q);}
-});
-return t;
+const i=s.children[0].value,q=+s.children[1].value;
+if(q>0)t+=values[i]*q;
+});return t;
 }
 
 function calculateTrade(){
-const o=calcTotal('offerSlots');
-const w=calcTotal('wantSlots');
-const d=o-w;
-const r=result,df=diff,bar=tradebar;
+const o=calcTotal('offerSlots'),w=calcTotal('wantSlots');
+const d=o-w,r=document.getElementById('result'),
+df=document.getElementById('diff'),bar=document.getElementById('tradebar');
 
-bar.style.width='50%';bar.style.background='#facc15';
-r.className='result';
+r.className='result';bar.style.width='50%';bar.style.background='#facc15';
 
-if(Math.abs(d)<20000){r.textContent='⚖️ TRADE JUSTA';r.classList.add('fair');df.textContent='';}
-else if(d<0){r.textContent='✅ WIN';r.classList.add('ok');df.textContent=`+${Math.abs(d).toLocaleString()}`;bar.style.width='80%';bar.style.background='#22c55e';}
-else{r.textContent='❌ LOSE';r.classList.add('under');df.textContent=`-${d.toLocaleString()}`;bar.style.width='20%';bar.style.background='#ef4444';}
-
-renderPrices();
-}
+if(Math.abs(d)<20000){
+r.textContent='⚖️ TRADE JUSTA';r.classList.add('fair');df.textContent='';
+}else if(d<0){
+r.textContent='✅ WIN';r.classList.add('ok');
+df.textContent=`+${Math.abs(d).toLocaleString()}`;
+bar.style.width='80%';bar.style.background='#22c55e';
+}else{
+r.textContent='❌ LOSE';r.classList.add('under');
+df.textContent=`-${d.toLocaleString()}`;
+bar.style.width='20%';bar.style.background='#ef4444';
+}}
 </script>
 </body>
 </html>
