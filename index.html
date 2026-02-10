@@ -3,32 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Robot Seas Trader</title>
-      v2.3
+<title>Robot Seas Trader v2.6</title>
+
 <style>
 body{margin:0;font-family:Arial;background:#0b0f1a;color:#e5e7eb}
-.container{max-width:1100px;margin:auto;padding:20px}
+.container{max-width:1150px;margin:auto;padding:20px}
 h1{text-align:center;color:#38bdf8}
+.version{text-align:center;color:#94a3b8;margin-bottom:20px}
+
 .card{background:#111827;border-radius:14px;padding:20px;margin-bottom:20px}
 h2{color:#facc15}
 
 button,select,input{
 width:100%;padding:10px;border-radius:10px;
 border:1px solid #1f2937;background:#020617;
-color:#e5e7eb;font-size:16px;margin-bottom:8px
+color:#e5e7eb;font-size:15px;margin-bottom:8px
 }
 button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 
 .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .priceTab p{padding:10px;border-bottom:1px solid #1f2937}
 
-.badge{padding:2px 8px;border-radius:8px;font-size:12px;font-weight:bold}
-.rare{background:#3b82f6}
-.legendary{background:#ef4444}
-.mythic{background:#a855f7}
-.exclusive{background:#f59e0b;color:#020617}
-
 .slot{display:grid;grid-template-columns:2fr 1fr;gap:10px}
+.editorRow{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-bottom:6px}
 
 .tradebar{width:100%;height:18px;border-radius:10px;background:#020617;overflow:hidden;margin:12px 0}
 .tradebar-inner{height:100%;width:50%;background:#facc15;transition:.4s}
@@ -39,10 +36,13 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 .fair{color:#facc15}
 </style>
 </head>
+
 <body>
 <div class="container">
 <h1>⚙️ Robot Seas — Trader</h1>
+<div class="version">Versão 2.6v</div>
 
+<!-- ================= VALORES ================= -->
 <div class="card">
 <h2>💰 Valores</h2>
 
@@ -53,6 +53,7 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 <button onclick="showTab('armas')">🗡️ Armas</button>
 <button onclick="showTab('tokens')">🎟️ Tokens</button>
 <button onclick="showTab('ranking')">🏆 Ranking</button>
+<button onclick="showTab('editor')">⚙️ Editor</button>
 </div>
 
 <div id="frutas" class="priceTab"></div>
@@ -61,16 +62,20 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 <div id="armas" class="priceTab" style="display:none"></div>
 <div id="tokens" class="priceTab" style="display:none"></div>
 <div id="ranking" class="priceTab" style="display:none"></div>
+<div id="editor" class="priceTab" style="display:none"></div>
 </div>
 
+<!-- ================= TRADE ================= -->
 <div class="card">
 <h2>🔄 Você oferece</h2>
 <div id="offerSlots"></div>
+<input type="number" id="offerTokens" placeholder="Tokens extras" value="0">
 </div>
 
 <div class="card">
 <h2>🎯 Você quer</h2>
 <div id="wantSlots"></div>
+<input type="number" id="wantTokens" placeholder="Tokens extras" value="0">
 </div>
 
 <button onclick="calculateTrade()">Calcular Trade</button>
@@ -78,134 +83,128 @@ button{background:#38bdf8;color:#020617;font-weight:bold;cursor:pointer}
 <div class="tradebar"><div id="tradebar" class="tradebar-inner"></div></div>
 <div id="result" class="result"></div>
 <div id="diff" class="result"></div>
-
 </div>
 
 <script>
 function showTab(tab){
-['frutas','perm','gamepass','armas','tokens','ranking']
+['frutas','perm','gamepass','armas','tokens','ranking','editor']
 .forEach(t=>document.getElementById(t).style.display='none');
 document.getElementById(tab).style.display='block';
 }
 
-/* ================= BASE (NUNCA MUDA) ================= */
-const baseValues={
+/* ================= BELI (VISUAL) ================= */
+const beliValues={
 'Flame':250000,'Light':750000,'Earth':4750000,'Time':7500000,
 'Flame (Perm)':12500000,'Light (Perm)':21250000,'Earth (Perm)':37250000,'Time (Perm)':45000000,
 '2x Money':2500000,'2x Maestria':2500000,'VIP':11250000,
 'Tecnologic Blade':5000000,'Golden Technology Gun':3750000
 };
 
-/* ================= PREÇO ATUAL ================= */
-const values={...baseValues};
-
-/* ================= RARIDADE ================= */
-const rarity={
-'Flame':'rare','Light':'rare','Earth':'legendary','Time':'mythic',
-'Flame (Perm)':'rare','Light (Perm)':'rare','Earth (Perm)':'legendary','Time (Perm)':'mythic',
-'2x Money':'legendary','2x Maestria':'legendary','VIP':'mythic',
-'Tecnologic Blade':'mythic','Golden Technology Gun':'exclusive'
-};
-
-/* ================= PREVISÃO (EDITA AQUI) ================= */
-const previsao={
-'Flame':'📉 Pode cair, baixa demanda',
-'Light':'⏸️ Estável no mercado',
-'Earth':'📈 Tendência de alta',
-'Time':'🚀 Muito valorizada',
-
-'Flame (Perm)':'📉 Pouco procurada',
-'Light (Perm)':'⏸️ Mercado estável',
-'Earth (Perm)':'📈 Alta demanda',
-'Time (Perm)':'🚀 Meta atual',
-
-'2x Money':'⏸️ Sempre útil',
-'2x Maestria':'⏸️ Demanda média',
-'VIP':'📈 Alta procura',
-
-'Tecnologic Blade':'🚀 Arma META',
-'Golden Technology Gun':'🔥 EXCLUSIVA — Pode subir Em 566%'
+/* ================= TOKENS (EDITÁVEL) ================= */
+let tokenValues={
+'Time (Perm)':90000,'Earth (Perm)':75000,'Light (Perm)':42500,'Flame (Perm)':25000,
+'VIP':22500,'2x Money':5000,'2x Maestria':5000,
+'Tecnologic Blade':10000,'Golden Technology Gun':7500,
+'Time':15000,'Earth':9500,'Light':1500,'Flame':500
 };
 
 /* ================= RENDER ================= */
 function renderTab(id,items){
 document.getElementById(id).innerHTML=items.map(i=>`
 <p>
-<strong>${i}</strong>
-<span class="badge ${rarity[i]}">${rarity[i].toUpperCase()}</span><br>
-💰 Atual: ${values[i].toLocaleString()}<br>
-📦 Base: ${baseValues[i].toLocaleString()}<br>
-🔮 ${previsao[i]}
+<strong>${i}</strong><br>
+🎟️ ${tokenValues[i]} Tokens<br>
+💰 ${beliValues[i].toLocaleString()} Beli
 </p>`).join('');
 }
 
+function renderAll(){
 renderTab('frutas',['Flame','Light','Earth','Time']);
 renderTab('perm',['Flame (Perm)','Light (Perm)','Earth (Perm)','Time (Perm)']);
 renderTab('gamepass',['2x Money','2x Maestria','VIP']);
 renderTab('armas',['Tecnologic Blade','Golden Technology Gun']);
 
+document.getElementById('ranking').innerHTML=
+Object.keys(tokenValues)
+.sort((a,b)=>tokenValues[b]-tokenValues[a])
+.map((i,n)=>`<p>#${n+1} ${i} — ${tokenValues[i]} Tokens</p>`).join('');
+
+renderEditor();
+}
+
 document.getElementById('tokens').innerHTML=`
-<p>🎟️ <strong>Conversão</strong></p>
-<p>100 Tokens = 1 Robux</p>
-<p>Time perm — 900 robux / 90000 tokens 
-<p>Earth perm — 750 robux / 75000 tokens
-<p>Light perm —  425 robux / 42500 tokens
-<p>Flame perm  — 250 robux / 25000 tokens
-<p>VIP — 225 Robux / 22500 Tokens</p>
-<p>Tecnologic Blade — 100 Robux / 10000 Tokens</p>
-<p>Golden Technology Gun  —  75 robux / 7500 tokens
-<p>2x money  — 50 robux / 5000 tokens
-<p> 2x maestria  — 50 robux / 5000 tokens
-<p>
-<p> Time  — 150 Robux / 15000 tokens
-<p> Earth  —  95 robux / 9500 tokens
-<p> Light  —  15 robux / 1500 Tokens
-<p> flame  — 5 robux / 500 tokens
+<p>💱 100 Tokens = 1 Robux</p>
+<p>📌 Trades usam apenas TOKENS</p>
 `;
 
-const rank=Object.keys(values).sort((a,b)=>values[b]-values[a]);
-document.getElementById('ranking').innerHTML=rank.map((i,n)=>
-`<p>#${n+1} ${i} — ${values[i].toLocaleString()}</p>`).join('');
+/* ================= EDITOR ================= */
+function renderEditor(){
+document.getElementById('editor').innerHTML=
+Object.keys(tokenValues).map(i=>`
+<div class="editorRow">
+<span>${i}</span>
+<input type="number" value="${tokenValues[i]}" 
+onchange="tokenValues['${i}']=+this.value;renderAll()">
+</div>
+`).join('');
+}
 
 /* ================= TRADE ================= */
 function createSlots(id){
 const c=document.getElementById(id);
+c.innerHTML='';
 for(let i=0;i<4;i++){
 const d=document.createElement('div');
 d.className='slot';
 const s=document.createElement('select');
-Object.keys(values).forEach(v=>s.innerHTML+=`<option>${v}</option>`);
-const q=document.createElement('input');q.type='number';q.value=0;
-d.appendChild(s);d.appendChild(q);c.appendChild(d);
+Object.keys(tokenValues).forEach(v=>s.innerHTML+=`<option>${v}</option>`);
+const q=document.createElement('input');
+q.type='number';q.value=0;
+d.appendChild(s);d.appendChild(q);
+c.appendChild(d);
 }}
-createSlots('offerSlots');createSlots('wantSlots');
+createSlots('offerSlots');
+createSlots('wantSlots');
 
 function calcTotal(id){
 let t=0;
 [...document.getElementById(id).children].forEach(s=>{
-const i=s.children[0].value,q=+s.children[1].value;
-if(q>0)t+=values[i]*q;
-});return t;
+const item=s.children[0].value;
+const q=+s.children[1].value;
+if(q>0)t+=tokenValues[item]*q;
+});
+return t;
 }
 
 function calculateTrade(){
-const o=calcTotal('offerSlots'),w=calcTotal('wantSlots');
-const d=o-w,r=document.getElementById('result'),
-df=document.getElementById('diff'),bar=document.getElementById('tradebar');
+let offer=calcTotal('offerSlots') + +offerTokens.value;
+let want=calcTotal('wantSlots') + +wantTokens.value;
+const d=offer-want;
 
-r.className='result';bar.style.width='50%';bar.style.background='#facc15';
+tradebar.style.width='50%';
+tradebar.style.background='#facc15';
+result.className='result';
 
-if(Math.abs(d)<20000){
-r.textContent='⚖️ TRADE JUSTA';r.classList.add('fair');df.textContent='';
-}else if(d<0){
-r.textContent='✅ WIN';r.classList.add('ok');
-df.textContent=`+${Math.abs(d).toLocaleString()}`;
-bar.style.width='80%';bar.style.background='#22c55e';
+if(Math.abs(d)<=500){
+result.textContent='⚖️ TRADE JUSTA';
+result.classList.add('fair');
+diff.textContent='';
+}else if(d>0){
+result.textContent='✅ WIN';
+result.classList.add('ok');
+diff.textContent=`+${d} Tokens`;
+tradebar.style.width='80%';
+tradebar.style.background='#22c55e';
 }else{
-r.textContent='❌ LOSE';r.classList.add('under');
-df.textContent=`-${d.toLocaleString()}`;
-bar.style.width='20%';bar.style.background='#ef4444';
-}}
+result.textContent='❌ LOSE';
+result.classList.add('under');
+diff.textContent=`-${Math.abs(d)} Tokens`;
+tradebar.style.width='20%';
+tradebar.style.background='#ef4444';
+}
+}
+
+renderAll();
 </script>
 </body>
 </html>
